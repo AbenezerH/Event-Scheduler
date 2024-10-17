@@ -2,6 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require('cookie-parser');
 const eventRoute = require("./routes/eventRoute");
+const loginRoute = require("./routes/loginRoute");
+const tokenRoute = require("./routes/tokenRoute");
+const signupRoute = require("./routes/signupRoute");
 
 const app = express();
 
@@ -19,7 +22,12 @@ app.options('*', cors({
 app.use(express.json());
 app.use(cookieParser());
 
-// routes
+// unprotected route
+app.use("/login", loginRoute);
+app.use("/signup", signupRoute);
+app.use("/token", tokenRoute);
+
+// protected routes
 app.use("/event", eventRoute);
 
 // Error-handling middleware
