@@ -1,0 +1,25 @@
+.container {
+    padding: 20px;
+    margin-bottom: 10rem;
+}
+
+.dark-theme .calendar-btns {
+    width: 5%;
+    border: none;
+    cursor: pointer;
+    color: #1a1a1a;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+    background: linear-gradient(to right, #667eea, #764ba2);
+}
+
+.light-theme .calendar-btns {
+    width: 5%;
+    border: none;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s;
+    background: linear-gradient(to right, #667eea, #764ba2);
+}
