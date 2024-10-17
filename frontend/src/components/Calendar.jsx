@@ -18,9 +18,9 @@ const Calendar = ({ events }) => {
     return (
         <div className="calendar">
             <div className="calendar-header">
-                <button onClick={prevMonth}>&lt;</button>
+                <button onClick={prevMonth} className="calendar-btns">&lt;</button>
                 <h2>{format(currentDate, 'MMMM yyyy')}</h2>
-                <button onClick={nextMonth}>&gt;</button>
+                <button onClick={nextMonth} className="calendar-btns">&gt;</button>
             </div>
             <div className="calendar-days">
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (

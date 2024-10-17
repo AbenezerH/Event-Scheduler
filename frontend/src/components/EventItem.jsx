@@ -2,13 +2,13 @@
 const EventItem = ({ event, editEvent, deleteEvent }) => (
     <div className="event">
         <div>
-            <h3>{event.title}</h3>
-            <p>{event.description}</p>
-            <small>{new Date(event.dateTime).toLocaleString()}</small>
+            <h3>{event?.event_title}</h3>
+            <p>{event?.event_description}</p>
+            <small>{new Date(event?.event_date)?.toLocaleString()}</small>
         </div>
         <div className="event-actions">
             <button onClick={() => editEvent(event)}>Edit</button>
-            <button onClick={() => deleteEvent(event._id)}>Delete</button>
+            <button onClick={() => deleteEvent(event?.id)}>Delete</button>
         </div>
     </div>
 );

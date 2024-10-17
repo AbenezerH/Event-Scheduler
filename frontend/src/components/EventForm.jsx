@@ -10,35 +10,31 @@ const EventForm = ({ event, setEvent, handleSubmit, recurrenceData, setRecurrenc
                     <input
                         type="text"
                         aria-label='event-title'
-                        value={event && event.title ? event.title : ''}
-                        onChange={(e) => setEvent({ ...event, title: e.target.value })}
+                        value={event && event.event_title ? event.event_title : ''}
+                        onChange={(e) => setEvent({ ...event, event_title: e.target.value })}
                         placeholder="Event Title"
                         required
                     />
                     <input
                         type="text"
                         aria-label='event-location'
-                        value={event && event.location ? event.location : ''}
-                        onChange={(e) => setEvent({ ...event, location: e.target.value })}
+                        value={event && event.event_location ? event.event_location : ''}
+                        onChange={(e) => setEvent({ ...event, event_location: e.target.value })}
                         placeholder="Event Location"
                     />
                     <input
                         type="text"
                         aria-label='event-organizer'
-                        value={event && event.organizer ? event.organizer : ''}
-                        onChange={(e) => setEvent({ ...event, organizer: e.target.value })}
+                        value={event && event.event_organizer ? event.event_organizer : ''}
+                        onChange={(e) => setEvent({ ...event, event_organizer: e.target.value })}
                         placeholder="Event Organizer"
                     />
                     <input
                         type="datetime-local"
                         aria-label='event-date'
                         className='date-input'
-                        value={event && event.dateTime ? event.dateTime : ''}
-                        onChange={(e) => setEvent({ ...event, dateTime: e.target.value })}
-                        onDoubleClick={(e) => {
-                            setEvent({ ...event, dateTime: e.target.value });
-                            e.target.blur();
-                        }}
+                        value={event && event.event_date ? event.event_date : ''}
+                        onChange={(e) => setEvent({ ...event, event_date: e.target.value })}
                         required
                     />
                     <div className="recurrence-toggle-wrapper">
@@ -60,8 +56,8 @@ const EventForm = ({ event, setEvent, handleSubmit, recurrenceData, setRecurrenc
                 <div className='form-col large'>
                     <textarea
                         aria-label='event-description'
-                        value={event && event.description ? event.description : ''}
-                        onChange={(e) => setEvent({ ...event, description: e.target.value })}
+                        value={event && event.event_description ? event.event_description : ''}
+                        onChange={(e) => setEvent({ ...event, event_description: e.target.value })}
                         placeholder="Event Description"
                         required
                     />
@@ -131,7 +127,7 @@ const EventForm = ({ event, setEvent, handleSubmit, recurrenceData, setRecurrenc
                     </div>
                 </>
             }
-            <button type="submit">{event && event._id ? 'Update Event' : 'Add Event'}</button>
+            <button type="submit">{event && event.id ? 'Update Event' : 'Add Event'}</button>
         </form>
     )
 };

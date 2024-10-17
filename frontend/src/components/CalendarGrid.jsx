@@ -20,7 +20,7 @@ const CalendarGrid = ({ events, currentDate }) => {
         const days = [];
         for (let i = 0; i < 7; i++) {
             const cloneDay = day;
-            const eventsForDay = events.filter(event =>
+            const eventsForDay = events?.filter(event =>
                 isSameDay(cloneDay, new Date(event.dateTime))
             );
             days.push(
@@ -29,8 +29,8 @@ const CalendarGrid = ({ events, currentDate }) => {
                     key={day}
                 >
                     <div className="calendar-day-header">{format(day, dateFormat)}</div>
-                    {eventsForDay.map(event => (
-                        <div key={event._id} className="calendar-event" title={event.description}>
+                    {eventsForDay?.map(event => (
+                        <div key={event.id} className="calendar-event" title={event.description}>
                             {formatEventTime(event.dateTime)} {event.title}
                         </div>
                     ))}
