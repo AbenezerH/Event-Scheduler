@@ -9,7 +9,6 @@ fi
 check_var() {
     local var_name=$1
     local var_value=$(eval echo \$$var_name)
-
     if [ -z "$var_value" ]; then
         read -p "Enter $var_name: " var_value
         export $var_name=$var_value
@@ -18,27 +17,27 @@ check_var() {
 
 # Check required variables
 check_var DB_USERNAME
-check_var DB_NAME
 check_var DB_PASSWORD
+check_var DB_NAME
 
-# Step 1: Run the database initializer
+# Step 1: Run the database initialization script
 echo "Initializing database..."
 PGPASSWORD=$DB_PASSWORD psql -U $DB_USERNAME -f database/init.sql
 
 # Step 2: Wait for the database to start
 echo "Waiting for database to be ready..."
-until PGPASSWORD=$DB_PASSWORD psql -U $DB_USERNAME -c '\l'; do
+until PGPASSWORD=$DB_PASSWORD psql -U $DB_USERNAME -c '\l' | grep -q $DB_NAME; do
   >&2 echo "Database is starting up"
   sleep 1
 done
 
-# Step 3: Run the backend server initializer
+# Step 3: Run the backend server initialize
 echo "Initializing backend server..."
 cd backend
 npm install
 npm start &
 
-# Step 4: Run the frontend server initializer
+# Step 4: Run the frontend server initialize
 echo "Initializing frontend server..."
 cd ../frontend
 npm install
