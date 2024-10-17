@@ -1,4 +1,4 @@
-import "./notFound.scss";
+import "./notFound.css";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import Astronaut from "../../components/Astronaut";
@@ -12,10 +12,10 @@ const NotFound = ({
   return (
     <div className="not-found-wrapper">
 
-      <div className="content">
-        <h1>{errorCode}</h1>
+      <div className="not-found-content">
+        <h1 className="not-found-error">{errorCode}</h1>
         <Astronaut />
-        <p>{message}</p>
+        <p className="not-found-p">{message}</p>
         <button className="btn" onClick={() => navigate(-1)}>{buttonText}</button>
       </div>
     </div>
