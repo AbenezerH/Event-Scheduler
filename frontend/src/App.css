@@ -1,7 +1,7 @@
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
-  padding: 20px;
+  padding: 0;
   transition: background-color 0.3s, color 0.3s;
 }
 
@@ -13,6 +13,10 @@ body.dark-theme {
 body.light-theme {
   background-color: #f5f5f5;
   color: #333333;
+}
+
+.app {
+  height: fit-content;
 }
 
 .container {
@@ -156,8 +160,8 @@ textarea {
   font-size: 16px;
 }
 
-.type-select,
-.custom-select.minute-select {
+.dark-theme .type-select,
+.dark-theme .custom-select.minute-select {
   padding: 10px;
   font-size: 16px;
   background-color: #444;
@@ -274,9 +278,17 @@ input:checked+.slider:before {
   align-items: center;
 }
 
-.recurrence-toggle-description {
+.dark-theme .recurrence-toggle-description {
   font-size: 16px;
   color: #a0a0a0;
+  font-weight: 500;
+  margin-right: 10px;
+}
+
+.light-theme .recurrence-toggle-description {
+  font-size: 16px;
+  color: #303030;
+  font-weight: 500;
   margin-right: 10px;
 }
 
@@ -408,6 +420,10 @@ input:checked+.slider:before {
   background-color: rgba(32, 178, 170, 0.4);
 }
 
+.light-theme .calendar-day.today {
+  background-color: rgba(32, 178, 170, 0.4);
+}
+
 .dark-theme .calendar-day {
   border-color: #444;
 }
@@ -435,4 +451,5 @@ input:checked+.slider:before {
   color: #fff;
   line-height: 20px;
   width: 100%;
+  padding: 5px;
 }
