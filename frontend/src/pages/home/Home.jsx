@@ -6,44 +6,6 @@ import Calendar from '../../components/Calendar.jsx';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
-// Mock Database
-const mockDatabase = (() => {
-    let events = JSON.parse(localStorage.getItem('events')) || [];
-    let nextId = Math.max(0, ...events.map(e => e.id || 0)) + 1;
-
-    const saveEvents = () => {
-        localStorage.setItem('events', JSON.stringify(events));
-    };
-
-    return {
-        getEvents: () => [...events],
-        addEvent: (event) => {
-            const newEvent = { ...event, id: nextId++ };
-            events.push(newEvent);
-            saveEvents();
-            return newEvent;
-        },
-        updateEvent: (id, updatedEvent) => {
-            const index = events.findIndex(e => e.id === id);
-            if (index !== -1) {
-                events[index] = { ...updatedEvent, id: id };
-                saveEvents();
-                return events[index];
-            }
-            return null;
-        },
-        deleteEvent: (id) => {
-            const index = events.findIndex(e => e.id === id);
-            if (index !== -1) {
-                events.splice(index, 1);
-                saveEvents();
-                return true;
-            }
-            return false;
-        }
-    };
-})();
-
 const fetcher = async (url) => {
     const token = localStorage.getItem('token') ? JSON.parse(localStorage.getItem('token')).value : null;
     try {
