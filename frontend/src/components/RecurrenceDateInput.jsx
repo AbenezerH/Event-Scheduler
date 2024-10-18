@@ -1,23 +1,25 @@
 import MinutePicker from "./MinutePicker";
 import DayPicker from "./DayPicker";
+import DateNumberPicker from "./DateNumberPicker.jsx";
+import YearlyPickerWrapper from "./YearlyEventPicker.jsx";
 import { useState } from "react";
 
-const RecurrenceDateInput = ({ recurrenceTimeUnit, event, setEvent }) => {
+const RecurrenceDateInput = ({ recurrenceTimeUnit, recurrence, setRecurrence }) => {
   const [showDayPicker, setShowDayPicker] = useState(false);
 
   let inputType;
   switch (recurrenceTimeUnit) {
     case 'hour':
-      inputType = <MinutePicker event={event} setEvent={setEvent} />;
+      inputType = <MinutePicker recurrence={recurrence} setRecurrence={setRecurrence} />;
       break;
     case 'day':
       inputType = (
         <input
           type="time"
           aria-label='event-date'
-          className='date-input'
-          value={event && event.dateTime ? event.dateTime : ''}
-          onChange={(e) => setEvent({ ...event, dateTime: e.target.value })}
+          className='recurrence-date-input'
+          value={recurrence && recurrence.recurrence_amount ? recurrence.recurrence_amount : ''}
+          onChange={(e) => setRecurrence({ ...recurrence, recurrence_amount: e.target.value })}
           required
         />
       );
@@ -28,42 +30,24 @@ const RecurrenceDateInput = ({ recurrenceTimeUnit, event, setEvent }) => {
           <button type="button" className="btn-day-show" onClick={() => setShowDayPicker(prev => !prev)}>
             {showDayPicker ? 'Hide Day Picker' : 'Show Day Picker'}
           </button>
-          {showDayPicker && <DayPicker event={event} setEvent={setEvent} />}
+          {showDayPicker && <DayPicker recurrence={recurrence} setRecurrence={setRecurrence} />}
         </div>
       );
       break;
     case 'month':
-      inputType = (
-        <input
-          type="date"
-          aria-label='event-date'
-          className='date-input'
-          value={event && event.dateTime ? event.dateTime : ''}
-          onChange={(e) => setEvent({ ...event, dateTime: e.target.value })}
-          required
-        />
-      );
+      inputType = <DateNumberPicker recurrence={recurrence} setRecurrence={setRecurrence} />
       break;
     case 'year':
-      inputType = (
-        <input
-          type="date"
-          aria-label='event-date'
-          className='date-input'
-          value={event && event.dateTime ? event.dateTime : ""}
-          onChange={(e) => setEvent({ ...event, dateTime: e.target.value })}
-          required
-        />
-      );
+      inputType = <YearlyPickerWrapper recurrence={recurrence} setRecurrence={setRecurrence} />
       break;
     default:
       inputType = (
         <input
           type="datetime-local"
           aria-label='event-date'
-          className='date-input'
-          value={event && event.dateTime ? event.dateTime : ''}
-          onChange={(e) => setEvent({ ...event, dateTime: e.target.value })}
+          className='recurrence-date-input'
+          value={recurrence && recurrence.event_date ? recurrence.event_date : ''}
+          onChange={(e) => setRecurrence({ ...recurrence, event_date: e.target.value })}
           required
         />
       );
