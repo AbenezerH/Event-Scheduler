@@ -2,134 +2,137 @@ import RecurrenceDateInput from "./RecurrenceDateInput";
 
 
 // EventForm Component
-const EventForm = ({ event, setEvent, handleSubmit, recurrenceData, setRecurrenceData, isRecurring, setIsRecurring }) => {
-    return (
-        <form onSubmit={handleSubmit}>
-            <div className='form-row'>
-                <div className='form-col small'>
-                    <input
-                        type="text"
-                        aria-label='event-title'
-                        value={event && event.event_title ? event.event_title : ''}
-                        onChange={(e) => setEvent({ ...event, event_title: e.target.value })}
-                        placeholder="Event Title"
-                        required
-                    />
-                    <input
-                        type="text"
-                        aria-label='event-location'
-                        value={event && event.event_location ? event.event_location : ''}
-                        onChange={(e) => setEvent({ ...event, event_location: e.target.value })}
-                        placeholder="Event Location"
-                    />
-                    <input
-                        type="text"
-                        aria-label='event-organizer'
-                        value={event && event.event_organizer ? event.event_organizer : ''}
-                        onChange={(e) => setEvent({ ...event, event_organizer: e.target.value })}
-                        placeholder="Event Organizer"
-                    />
-                    <input
-                        type="datetime-local"
-                        aria-label='event-date'
-                        className='date-input'
-                        value={event && event.event_date ? event.event_date : ''}
-                        onChange={(e) => setEvent({ ...event, event_date: e.target.value })}
-                        required
-                    />
-                    <div className="recurrence-toggle-wrapper">
-                        <span className="recurrence-toggle-description">{isRecurring ? "Recurring Event" : "Single Occurence"}</span>
-                        <div className="recurrence-toggle" onClick={() => setIsRecurring(prev => !prev)}>
-                            <input
-                                type="checkbox"
-                                checked={isRecurring}
-                                onChange={() => setIsRecurring(prev => !prev)}
-                                id="recurrence-toggle-checkbox"
-                                className="recurrence-toggle-checkbox"
-                            />
-                            <label htmlFor="recurrence-toggle-checkbox" className="recurrence-toggle-label">
-                                <span className="recurrence-toggle-slider"></span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <div className='form-col large'>
-                    <textarea
-                        aria-label='event-description'
-                        value={event && event.event_description ? event.event_description : ''}
-                        onChange={(e) => setEvent({ ...event, event_description: e.target.value })}
-                        placeholder="Event Description"
-                        required
-                    />
-                </div>
+const EventForm = ({ event, setEvent, handleSubmit, isRecurring, setIsRecurring }) => {
+  return (
+    <form onSubmit={handleSubmit}>
+      <div className='form-row'>
+        <div className='form-col small'>
+          <input
+            type="text"
+            aria-label='event-title'
+            value={event && event.event_title ? event.event_title : ''}
+            onChange={(e) => setEvent({ ...event, event_title: e.target.value })}
+            placeholder="Event Title"
+            required
+          />
+          <input
+            type="text"
+            aria-label='event-location'
+            value={event && event.event_location ? event.event_location : ''}
+            onChange={(e) => setEvent({ ...event, event_location: e.target.value })}
+            placeholder="Event Location"
+          />
+          <input
+            type="text"
+            aria-label='event-organizer'
+            value={event && event.event_organizer ? event.event_organizer : ''}
+            onChange={(e) => setEvent({ ...event, event_organizer: e.target.value })}
+            placeholder="Event Organizer"
+          />
+          <input
+            type="datetime-local"
+            aria-label='event-date'
+            className='date-input'
+            value={event && event.event_date ? event.event_date : ''}
+            onChange={(e) => setEvent({ ...event, event_date: e.target.value })}
+            required
+          />
+          <div className="recurrence-toggle-wrapper">
+            <span className="recurrence-toggle-description">{isRecurring ? "Recurring Event" : "Single Occurence"}</span>
+            <div className="recurrence-toggle" onClick={() => setIsRecurring(prev => !prev)}>
+              <input
+                type="checkbox"
+                checked={isRecurring}
+                onChange={() => setIsRecurring(prev => !prev)}
+                id="recurrence-toggle-checkbox"
+                className="recurrence-toggle-checkbox"
+              />
+              <label htmlFor="recurrence-toggle-checkbox" className="recurrence-toggle-label">
+                <span className="recurrence-toggle-slider"></span>
+              </label>
             </div>
-            {isRecurring &&
-                <>
-                    <div className='form-row recurrence'>
-                        <div className='select-col form-col recurrence'>
-                            <label htmlFor='type-of-recurrence'>Recurrence Type</label>
-                            <select
-                                name='type-of-recurrence'
-                                className='type-select'
-                                value={recurrenceData?.recurrence_type || "standard"}
-                                onChange={(e) => setRecurrenceData(prev => ({ ...prev, recurrence_type: e.target.value }))}
-                            >
-                                <option value={"standard"}>Standard Recurrence</option>
-                                <option value={"every nth"}>Every Nth Recurrence</option>
-                                <option value={"specific day"}>Specific Unit Recurrence</option>
-                                <option value={"relative date"}>Relative Date Recurrence</option>
-                            </select>
-                        </div>
-                        <div className='select-col form-col recurrence'>
-                            <label htmlFor='time-unit'>Time Unit</label>
-                            <select
-                                name='time-unit'
-                                className='type-select'
-                                value={recurrenceData?.time_unit || "day"}
-                                onChange={(e) => setRecurrenceData(prev => ({ ...prev, time_unit: e.target.value }))}
-                            >
-                                <option value={""}>Select Time Unit</option>
-                                <option value={"hour"}>Hour{recurrenceData?.recurrence_type === 'standard' && "ly"}</option>
-                                <option value={"day"}>{recurrenceData?.recurrence_type === 'standard' ? "Daily" : "Day"}</option>
-                                <option value={"week"}>Week{recurrenceData?.recurrence_type === 'standard' && "ly"}</option>
-                                <option value={"month"}>Month{recurrenceData?.recurrence_type === 'standard' && "ly"}</option>
-                                <option value={"year"}>Year{recurrenceData?.recurrence_type === 'standard' && "ly"}</option>
-                            </select>
-                        </div>
-                        {recurrenceData?.recurrence_type !== 'standard' ?
-                            <>
-                                <div className='form-col recurrence'>
-                                    <label htmlFor='recurrence-amount'>Recurrence Amount</label>
-                                    <input
-                                        type='number'
-                                        name='recurrence-amount'
-                                        value={recurrenceData?.recurrence_amount || ""}
-                                        onChange={(e) => {
-                                            const value = e.target.value;
-                                            setRecurrenceData(prev => ({
-                                                ...prev,
-                                                recurrence_amount: (value === '' || value > 0) ? value : 1
-                                            }));
-                                        }}
-                                    />
-                                </div>
-                            </> :
-                            <>
-                                <RecurrenceDateInput recurrenceTimeUnit={recurrenceData?.time_unit} event={event} setEvent={setEvent} />
-                            </>
-                        }
-                    </div>
-                    <div className='form-row'>
-                        <div className='form-col recurrence'>
-                            <label htmlFor='recurrence-description'>Recurrence Description</label>
-                            <textarea placeholder='No Recurrence Chosen' readOnly />
-                        </div>
-                    </div>
-                </>
+          </div>
+        </div>
+        <div className='form-col large'>
+          <textarea
+            aria-label='event-description'
+            value={event && event.event_description ? event.event_description : ''}
+            onChange={(e) => setEvent({ ...event, event_description: e.target.value })}
+            placeholder="Event Description"
+            required
+          />
+        </div>
+      </div>
+      {isRecurring &&
+        <>
+          <div className='form-row recurrence'>
+            <div className='select-col form-col recurrence'>
+              <label htmlFor='type-of-recurrence'>Recurrence Type</label>
+              <select
+                name='type-of-recurrence'
+                className='type-select'
+                value={event?.recurrence?.recurrence_type || "standard"}
+                onChange={(e) => setEvent(prev => ({ ...prev, recurrence: { ...prev.recurrence, recurrence_type: e.target.value } }))}
+              >
+                <option value={"standard"}>Standard Recurrence</option>
+                <option value={"every nth"}>Every Nth Recurrence</option>
+                <option value={"specific day"}>Specific Unit Recurrence</option>
+                <option value={"relative date"}>Relative Date Recurrence</option>
+              </select>
+            </div>
+            <div className='select-col form-col recurrence'>
+              <label htmlFor='time-unit'>Time Unit</label>
+              <select
+                name='time-unit'
+                className='type-select'
+                value={event?.recurrence?.time_unit || "day"}
+                onChange={(e) => setEvent(prev => ({ ...prev, recurrence: { ...prev.recurrence, time_unit: e.target.value } }))}
+              >
+                <option value={""}>Select Time Unit</option>
+                <option value={"hour"}>Hour{event?.recurrence?.recurrence_type === 'standard' && "ly"}</option>
+                <option value={"day"}>{event?.recurrence?.recurrence_type === 'standard' ? "Daily" : "Day"}</option>
+                <option value={"week"}>Week{event?.recurrence?.recurrence_type === 'standard' && "ly"}</option>
+                <option value={"month"}>Month{event?.recurrence?.recurrence_type === 'standard' && "ly"}</option>
+                <option value={"year"}>Year{event?.recurrence?.recurrence_type === 'standard' && "ly"}</option>
+              </select>
+            </div>
+            {event?.recurrence?.recurrence_type !== 'standard' ?
+              <>
+                <div className='form-col recurrence'>
+                  <label htmlFor='recurrence-amount'>Recurrence Amount</label>
+                  <input
+                    type='number'
+                    name='recurrence-amount'
+                    value={event?.recurrence?.recurrence_amount || ""}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setEvent(prev => ({
+                        ...prev,
+                        recurrence: {
+                          ...prev.recurrence,
+                          recurrence_amount: (value === '' || value > 0) ? value : 1
+                        },
+                      }));
+                    }}
+                  />
+                </div>
+              </> :
+              <>
+                <RecurrenceDateInput recurrenceTimeUnit={event?.recurrence?.time_unit} recurrence={event?.recurrence} setRecurrence={(data) => setEvent(prev => ({ ...prev, recurrence: data }))} />
+              </>
             }
-            <button type="submit">{event && event.id ? 'Update Event' : 'Add Event'}</button>
-        </form>
-    )
+          </div>
+          <div className='form-row'>
+            <div className='form-col recurrence'>
+              <label htmlFor='recurrence-description'>Recurrence Description</label>
+              <textarea placeholder='No Recurrence Chosen' readOnly value={JSON.stringify(event?.recurrence)} />
+            </div>
+          </div>
+        </>
+      }
+      <button type="submit">{event && event.id ? 'Update Event' : 'Add Event'}</button>
+    </form>
+  )
 };
 
 export default EventForm;;
