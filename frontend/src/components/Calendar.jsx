@@ -1,11 +1,9 @@
 import { format, addMonths, subMonths } from "date-fns";
-import { useState } from 'react';
 import CalendarGrid from './CalendarGrid';
 
 
 // Calendar Component
-const Calendar = ({ events }) => {
-    const [currentDate, setCurrentDate] = useState(new Date());
+const Calendar = ({ eventDates, currentDate, setCurrentDate }) => {
 
     const nextMonth = () => {
         setCurrentDate(addMonths(currentDate, 1));
@@ -27,7 +25,7 @@ const Calendar = ({ events }) => {
                     <div key={day} className="calendar-day-name">{day}</div>
                 ))}
             </div>
-            <CalendarGrid events={events} currentDate={currentDate} />
+            <CalendarGrid currentDate={currentDate} eventDates={eventDates} />
         </div>
     );
 };
