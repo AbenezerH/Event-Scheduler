@@ -2,7 +2,7 @@ import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, 
 
 
 // CalendarGrid Component
-const CalendarGrid = ({ events, currentDate }) => {
+const CalendarGrid = ({ currentDate, eventDates, }) => {
     const startOfMonthVar = startOfMonth(currentDate);
     const endOfMonthVar = endOfMonth(currentDate);
     const startDateVar = startOfWeek(startOfMonthVar);
@@ -20,8 +20,8 @@ const CalendarGrid = ({ events, currentDate }) => {
         const days = [];
         for (let i = 0; i < 7; i++) {
             const cloneDay = day;
-            const eventsForDay = events?.filter(event =>
-                isSameDay(cloneDay, new Date(event.dateTime))
+            const eventsForDay = eventDates?.filter(event =>
+                isSameDay(cloneDay, new Date(event.event_date))
             );
             days.push(
                 <div
@@ -29,9 +29,9 @@ const CalendarGrid = ({ events, currentDate }) => {
                     key={day}
                 >
                     <div className="calendar-day-header">{format(day, dateFormat)}</div>
-                    {eventsForDay?.map(event => (
-                        <div key={event.id} className="calendar-event" title={event.description}>
-                            {formatEventTime(event.dateTime)} {event.title}
+                    {eventsForDay?.sort((a, b) => new Date(a.event_date) - new Date(b.event_date)).map((event, index) => (
+                        <div key={event.id + ' ' + index} className="calendar-event" title={event.event_description}>
+                            {formatEventTime(event.event_date)} {event.event_title}
                         </div>
                     ))}
                 </div>
