@@ -43,6 +43,8 @@ h2 {
 .event-list {
   border-radius: 8px;
   padding: 20px;
+  width: fit-content;
+  min-width: 960px;
   margin-top: 20px;
   transition: background-color 0.3s;
 }
