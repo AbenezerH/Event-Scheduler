@@ -1,14 +1,12 @@
-const DayPicker = ({ event, setEvent }) => {
+const DayPicker = ({ recurrence, setRecurrence }) => {
     const daysOfWeek = ['Su', 'M', 'Tu', 'W', 'Th', 'F', 'Sa'];
 
     const handleDayChange = (day) => {
-        setEvent(prevEvent => {
-            const currentDays = prevEvent.recurrenceDays || [];
-            const newDays = currentDays.includes(day)
-                ? currentDays.filter(d => d !== day)
-                : [...currentDays, day];
-            return { ...prevEvent, recurrenceDays: newDays };
-        });
+        const currentDays = recurrence.selected_days || [];
+        const newDays = currentDays.includes(day)
+            ? currentDays.filter(d => d !== day)
+            : [...currentDays, day];
+        setRecurrence({ ...recurrence, selected_days: newDays });
     };
 
     return (
@@ -17,12 +15,20 @@ const DayPicker = ({ event, setEvent }) => {
                 <label key={day}>
                     <input
                         type="checkbox"
-                        checked={event.recurrenceDays?.includes(day) || false}
+                        checked={recurrence.selected_days?.includes(day) || false}
                         onChange={() => handleDayChange(day)}
                     />
                     {day}
                 </label>
             ))}
+            <input
+                type="time"
+                aria-label='recurrence-amount'
+                className='recurrence-date-input'
+                value={recurrence && recurrence.recurrence_amount ? recurrence.recurrence_amount : ''}
+                onChange={(e) => setRecurrence({ ...recurrence, recurrence_amount: e.target.value })}
+                required
+            />
         </div>
     );
 };
