@@ -68,7 +68,7 @@ const YearlyEventPicker = ({ recurrence, setRecurrence, selectedMonth, setSelect
     return (
         <div className="yearly-event-picker">
             <MonthPicker handleRecurrenceChange={handleRecurrenceChange} selectedMonth={selectedMonth} setSelectedMonth={setSelectedMonth} recurrence={recurrence} setRecurrence={setRecurrence} />
-            <RollingDayPicker handleRecurrenceChange={handleRecurrenceChange} recurrence={recurrence} setRecurrence={setRecurrence} />
+            <RollingDayPicker handleRecurrenceChange={handleRecurrenceChange} recurrence={recurrence} setRecurrence={setRecurrence} currentMonth={selectedMonth && selectedMonth} />
         </div>
     );
 };
