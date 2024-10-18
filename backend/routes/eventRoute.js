@@ -26,7 +26,6 @@ router.get("/", authenticate, async (req, res) => {
     }
 });
 
-
 router.post("/", authenticate, async (req, res) => {
     try {
         const {
@@ -56,14 +55,15 @@ router.post("/", authenticate, async (req, res) => {
                 "INSERT INTO events (user_id, event_title, event_description, event_date, event_location, event_organizer, recurrence_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
                 [user_id, event_title, event_description, formattedDate, event_location, event_organizer, recurrence_id]
             );
-            res.status(200).send(resp.rows);
+            res.json(resp.rows.map(row => ({ ...row, selected_days: row?.selected_days?.days })));
         } else {
             // Insert event without recurrence_id
             const resp = await pool.query(
                 "INSERT INTO events (user_id, event_title, event_description, event_date, event_location, event_organizer) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
                 [user_id, event_title, event_description, formattedDate, event_location, event_organizer]
             );
-            res.status(200).send(resp.rows);
+            res.json(resp.rows.map(row => ({ ...row, selected_days: row?.selected_days?.days })));
+
         }
     } catch (error) {
         console.error("Error during inserting data:\n", error);
@@ -71,25 +71,35 @@ router.post("/", authenticate, async (req, res) => {
     }
 });
 
-
 router.put("/:id", authenticate, async (req, res) => {
-    const { id } = req.params;
-    const { event_title, event_description, event_date, event_location, event_organizer } = req.body;
-
-    let formattedDate = event_date && new Date(event_date)?.toLocaleString()
-    console.log(formattedDate, typeof formattedDate);
-
     try {
-        const resp = await pool.query(
-            "UPDATE events SET event_title = $1, event_description = $2, event_date = $3, event_location = $4, event_organizer = $5 WHERE id = $6 RETURNING *",
-            [event_title, event_description, formattedDate, event_location, event_organizer, id]
-        );
+        const { id } = req.params;
+        const { user_id, event_title, event_description, event_date, event_location, event_organizer, recurrence } = req.body;
 
-        if (resp.rowCount === 0) {
-            return res.status(404).json({ error: 'Event not found' });
+        let formattedDate = event_date && new Date(event_date)?.toISOString();
+
+        if (recurrence) {
+            console.log(recurrence)
+            // Update recurrence data
+            const resp1 = await pool.query(
+                "UPDATE recurrence SET recurrence_type = $1, time_unit = $2, recurrence_amount = $3, relative_recurrence_by = $4, selected_days = $5, recurrence_description = $6 WHERE id = $7 RETURNING *",
+                [recurrence.recurrence_type, recurrence.time_unit, recurrence.recurrence_amount, recurrence.relative_recurrence_by, { days: recurrence.selected_days }, recurrence.recurrence_description, recurrence.recurrence_id]
+            );
+
+            // Update event with the recurrence_id
+            const resp = await pool.query(
+                "UPDATE events SET user_id = $1, event_title = $2, event_description = $3, event_date = $4, event_location = $5, event_organizer = $6 WHERE id = $7 RETURNING *",
+                [user_id, event_title, event_description, formattedDate, event_location, event_organizer, id]
+            );
+            res.json([{ ...resp1.rows[0], selected_days: resp1.rows[0]?.selected_days?.days, ...resp.rows[0] }]);
+        } else {
+            // Update event without recurrence_id
+            const resp = await pool.query(
+                "UPDATE events SET user_id = $1, event_title = $2, event_description = $3, event_date = $4, event_location = $5, event_organizer = $6, recurrence_id = NULL WHERE id = $7 RETURNING *",
+                [user_id, event_title, event_description, formattedDate, event_location, event_organizer, id]
+            );
+            res.json(resp.rows);
         }
-
-        res.json(resp.rows);
     } catch (error) {
         console.error("Error during updating data:\n", error);
         res.status(500).json({ error: 'Internal server error' });
