@@ -71,6 +71,8 @@ const scheduleDatabase = (() => {
 	}
 })()
 
+const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
 const formatDate = (date) => {
 	const d = new Date(date);
 	const pad = (num) => (num < 10 ? '0' : '') + num;
@@ -316,16 +318,23 @@ function Home({ setIsAuthenticated, setToken }) {
 							currentDate.setDate(currentDate.getDate() + 1);
 						} else if (recurrence?.time_unit === 'month' && currentDate.getDate() === parseInt(recurrence.recurrence_amount)) {
 							allEvents.push({
-								event_date: new Date(
-									currentDate.getFullYear(),
-									currentDate.getMonth(),
-									parseInt(recurrence.recurrence_amount) // Day of the month
-								).toISOString(),
+								event_date: new Date(currentDate.getFullYear(), currentDate.getMonth(), parseInt(recurrence.recurrence_amount)).toISOString(),
 								event_title: event_title,
 								event_description: event_description,
 								event_id: event_id,
 							});
 							currentDate.setMonth(currentDate.getMonth() + 1);
+						} else if (recurrence?.time_unit === 'year' &&
+							currentDate.getDate() === parseInt(recurrence.recurrence_amount.split('-')[1]) &&
+							currentDate.getMonth() === months.indexOf(recurrence.recurrence_amount.split('-')[0])) {
+							console.log(new Date(currentDate.getFullYear(), months.indexOf(recurrence.recurrence_amount.split('-')[0]), parseInt(recurrence.recurrence_amount.split('-')[1])).toISOString(),)
+							allEvents.push({
+								event_date: new Date(currentDate.getFullYear(), months.indexOf(recurrence.recurrence_amount.split('-')[0]), parseInt(recurrence.recurrence_amount.split('-')[1])).toISOString(),
+								event_title: event_title,
+								event_description: event_description,
+								event_id: event_id,
+							});
+							currentDate.setFullYear(currentDate.getFullYear() + 1);
 						} else {
 							currentDate.setDate(currentDate.getDate() + 1);
 						}
