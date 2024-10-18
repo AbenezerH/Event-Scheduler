@@ -23,3 +23,129 @@
     transition: background-color 0.3s, color 0.3s;
     background: linear-gradient(to right, #667eea, #764ba2);
 }
+
+.roller-day-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    overflow: hidden;
+}
+
+.light-theme .month-picker {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    width: 100%;
+}
+
+.light-theme .month-button {
+    padding: 5px 8px 5px 8px;
+    border: 1px solid #ccc;
+    background: white;
+    cursor: pointer;
+    text-align: center;
+}
+
+.light-theme .month-button.selected {
+    background: #007BFF;
+    color: white;
+}
+
+.dark-theme .month-picker {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    width: 100%;
+}
+
+.dark-theme .month-button {
+    padding: 5px 8px 5px 8px;
+    border: 1px solid #555;
+    background: #333;
+    color: #ddd;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.dark-theme .month-button:hover {
+    background: #444;
+}
+
+.dark-theme .month-button.selected {
+    background: #007BFF;
+    color: white;
+}
+
+.rolling-day-picker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-height: 150px;
+    min-width: 80px;
+    overflow-y: scroll;
+    overflow: hidden;
+}
+
+.day-button {
+    padding: 10px;
+    border: none;
+    width: 60px;
+    background: transparent;
+    color: #aaa;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.3s ease, color 0.3s ease, opacity 0.3s ease, transform 0.5s ease;
+}
+
+.day-button:not(.current) {
+    opacity: 0.5;
+}
+
+.day-button.current {
+    background: #555;
+    color: #fff;
+    font-size: 1.2em;
+    opacity: 1;
+}
+
+.rolling-day-picker>.day-button:nth-child(1),
+.rolling-day-picker>.day-button:nth-child(3) {
+    transform: scale(0.8);
+    background: #555;
+    color: #fff;
+    opacity: 0.6;
+}
+
+.yearly-picker-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.recurrence-date-input {
+    padding: 10px;
+    border: 1px solid #555;
+    background: #333;
+    color: #ddd;
+    cursor: pointer;
+    text-align: center;
+    width: 95%;
+}
+
+.yearly-event-picker {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 10;
+    background: #333;
+    border: 1px solid #555;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    display: flex;
+    gap: 10px;
+    width: 90%;
+    align-items: center;
+}
