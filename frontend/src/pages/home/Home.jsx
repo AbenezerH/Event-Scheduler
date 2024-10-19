@@ -86,7 +86,7 @@ function Home({ setIsAuthenticated, setToken }) {
 	const [events, setEvents] = useState([]);
 	const [eventsRecurringDate, setEventsRecurringDate] = useState([]);
 	const [isRecurring, setIsRecurring] = useState(false);
-	const [currentEvent, setCurrentEvent] = useState({ event_title: '', event_description: '', event_location: '', event_organizer: '', event_date: '', recurrence: { recurrence_type: 'standard', time_unit: 'day' } });
+	const [currentEvent, setCurrentEvent] = useState({ event_title: '', event_description: '', event_location: '', event_organizer: '', event_date: '', recurrence: { recurrence_type: 'standard', time_unit: 'day', recurrence_amount: '1' } });
 	const [isDarkTheme, setIsDarkTheme] = useState(true);
 	const [activeTab, setActiveTab] = useState('list');
 	const [loading, setLoading] = useState(true);
