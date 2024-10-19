@@ -5,7 +5,7 @@ import EventList from '../../components/EventList.jsx';
 import Calendar from '../../components/Calendar.jsx';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import { startOfMonth, endOfMonth, startOfWeek, endOfWeek } from "date-fns";
+import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, addWeeks, subDays, differenceInCalendarDays, addMonths, differenceInCalendarMonths, addYears, differenceInCalendarYears } from "date-fns";
 
 
 const fetcher = async (url) => {
@@ -97,6 +97,7 @@ function Home({ setIsAuthenticated, setToken }) {
 			const storedToken = JSON.parse(localStorage.getItem('token'));
 			if (storedToken && storedToken.value) {
 				const currentTime = new Date().getTime();
+				console.log(currentTime, storedToken.expiration);
 				if (currentTime > storedToken.expiration) {
 					refreshAuthToken(storedToken.refreshToken);
 				} else {
@@ -117,9 +118,10 @@ function Home({ setIsAuthenticated, setToken }) {
 			}
 		};
 
-		const refreshAuthToken = async (refreshToken) => {
+		/* const refreshAuthToken = async (refreshToken) => {
 			try {
 				const res = await axios.post('http://localhost:5000/token', {}, { withCredentials: true });
+				console.log('Refresh Response:', res.data);
 				const data = res.data;
 				if (data && data.token) {
 					try {
@@ -144,14 +146,49 @@ function Home({ setIsAuthenticated, setToken }) {
 					setLoading(false);
 				}
 			} catch (error) {
+				console.error(error);
+				setIsAuthenticated(false);
+				setLoading(false);
+			}
+		}; */
+
+		const refreshAuthToken = async (refreshToken) => {
+			try {
+				const res = await axios.post('http://localhost:5000/token', {}, { withCredentials: true });
+				console.log('Refresh Response:', res.data);
+				const data = res.data;
+				if (data && data.token) {
+					try {
+						const decodedToken = jwtDecode(data.token);
+						const expirationTime = new Date().getTime() + 5 * 60 * 1000; // 5 minutes from now
+						const newToken = { value: data.token, refreshToken: refreshToken, expiration: expirationTime };
+						localStorage.setItem('token', JSON.stringify(newToken));
+						console.log("Token refreshed:", newToken);
+						setIsAuthenticated(true);
+						setUserId(decodedToken.user_id);
+						setLoading(false);
+					} catch (error) {
+						console.error('Invalid token:', error);
+						setIsAuthenticated(false);
+						setLoading(false);
+					}
+				} else {
+					setIsAuthenticated(false);
+					setLoading(false);
+				}
+			} catch (error) {
+				console.error(error);
 				setIsAuthenticated(false);
 				setLoading(false);
 			}
 		};
 
-		checkTokenExpiration();
-	}, [setIsAuthenticated, setToken]);
 
+		checkTokenExpiration();
+		const intervalId = setInterval(checkTokenExpiration, 5 * 60 * 1000); // Check every 5 minutes
+
+		return () => clearInterval(intervalId);
+	}, [setIsAuthenticated, setToken]);
 
 	useEffect(() => {
 		fetchEvents();
@@ -218,6 +255,8 @@ function Home({ setIsAuthenticated, setToken }) {
 					time_unit: newEvent[0]?.time_unit,
 				}
 			}]);
+			setIsRecurring(false);
+			await fetchEvents();
 		}
 	};
 
@@ -247,7 +286,8 @@ function Home({ setIsAuthenticated, setToken }) {
 					}
 				} :
 				event));
-			setIsRecurring(true);
+			await fetchEvents();
+			setIsRecurring(false);
 		}
 	};
 
@@ -281,60 +321,141 @@ function Home({ setIsAuthenticated, setToken }) {
 			const allEvents = [];
 
 			events.forEach(event => {
-				const { event_id, event_description, event_title, recurrence } = event;
-				const currentDate = new Date(startDate);
+				const { event_id, event_description, event_date, event_title, recurrence } = event;
+				// const currentDate = new Date(startDate);
+				const eventDate = new Date(event_date);
 
-				if (recurrence) {
+				if (!recurrence?.recurrence_id && eventDate >= startDate && eventDate <= endDate) {
+					allEvents.push({
+						event_title: event_title,
+						event_date: eventDate?.toLocaleString(),
+						event_description: event_description,
+						event_id: event_id,
+					});
+				}
+
+				if (recurrence?.recurrence_id) {
+					let currentDate = new Date(eventDate);
+
 					while (currentDate <= endDate) {
-						const dayOfWeek = daysOfWeek[currentDate.getUTCDay()];
+						// standard repeating it repeats on the time unit specified but for weekly we can create multiple days of the week that repeat
+						if (recurrence?.recurrence_type === "standard") {
+							const dayOfWeek = daysOfWeek[currentDate.getUTCDay()];
+							// standard and daily repeat
+							if (recurrence.time_unit === 'day') {
+								if (currentDate >= startDate && currentDate <= endDate) {
+									allEvents.push({
+										event_title: event_title,
+										event_date: currentDate.toLocaleString(),
+										event_description: event_description,
+										event_id: event_id,
+									});
+								}
+								currentDate.setDate(currentDate.getDate() + 1);
+							}
+							// standard and weekly repeat
+							else if (recurrence.time_unit === 'week' && recurrence?.selected_days?.includes(dayOfWeek)) {
+								allEvents.push({
+									event_date: new Date(
+										currentDate?.getFullYear(),
+										currentDate?.getMonth(),
+										currentDate?.getDate(),
+										parseInt(recurrence?.recurrence_amount?.split(":")[0]),
+										parseInt(recurrence?.recurrence_amount?.split(":")[1])
+									)?.toLocaleString(),
+									event_title: event_title,
+									event_description: event_description,
+									event_id: event_id,
+								});
+								currentDate.setDate(currentDate.getDate() + 1);
+							}
+							// standard and monthly repeat
+							else if (recurrence?.time_unit === 'month' && currentDate.getDate() === parseInt(recurrence.recurrence_amount)) {
+								allEvents.push({
+									event_date: currentDate.toLocaleString(),
+									event_title: event_title,
+									event_description: event_description,
+									event_id: event_id,
+								});
+								currentDate.setDate(currentDate.getDate() + 1);
+							}
+							// standard and yearly repeat
+							else if (recurrence?.time_unit === 'year' &&
+								currentDate.getDate() === parseInt(recurrence.recurrence_amount.split('-')[1]) &&
+								currentDate.getMonth() === months.indexOf(recurrence.recurrence_amount.split('-')[0])) {
+								allEvents.push({
+									event_date: new Date(currentDate.getFullYear(), months.indexOf(recurrence.recurrence_amount.split('-')[0]), parseInt(recurrence.recurrence_amount.split('-')[1])).toLocaleString(),
+									event_title: event_title,
+									event_description: event_description,
+									event_id: event_id,
+								});
+								currentDate.setFullYear(currentDate.getFullYear() + 1);
+							} else {
+								currentDate.setDate(currentDate.getDate() + 1);
+							}
+						}
+						// repeats every nth time unit which is the repeating frequence and the time unit respectively
+						else if (recurrence?.recurrence_type === "every nth") {
+							// every nth and day
+							if (recurrence?.time_unit === 'day' && differenceInCalendarDays(currentDate, event_date) % parseInt(recurrence?.recurrence_amount) === 0) {
+								if (currentDate >= startDate && currentDate <= endDate) {
+									allEvents.push({
+										event_title: event_title,
+										event_date: new Date(currentDate),
+										event_description: event_description,
+										event_id: event_id,
+									});
+									currentDate.setDate(currentDate.getDate() + parseInt(recurrence?.recurrence_amount) - 1); // off by one error so we need to subtract 1 because we have an additional code out of the condition to increament the date
+								}
+							}
+							// every nth and week
+							else if (recurrence?.time_unit === 'week' &&
+								differenceInCalendarDays(currentDate, event_date) % 7 === 0 &&
+								(differenceInCalendarDays(currentDate, event_date) / 7) % parseInt(recurrence?.recurrence_amount) === 0) {
+								if (currentDate >= startDate && currentDate <= endDate) {
+									allEvents.push({
+										event_title: event_title,
+										event_date: new Date(currentDate).toLocaleString(),
+										event_description: event_description,
+										event_id: event_id,
+									});
+									currentDate = subDays(addWeeks(currentDate, parseInt(recurrence?.recurrence_amount)), 1)
+								}
+							}
+							// every nth and week
+							else if (recurrence?.time_unit === 'month' &&
+								currentDate?.getDate() === new Date(event_date)?.getDate() &&
+								differenceInCalendarMonths(currentDate, event_date) % parseInt(recurrence?.recurrence_amount) === 0) {
+								if (currentDate >= startDate && currentDate <= endDate) {
+									allEvents.push({
+										event_title: event_title,
+										event_date: new Date(currentDate).toLocaleString(),
+										event_description: event_description,
+										event_id: event_id,
+									});
+									currentDate = addMonths(currentDate, parseInt(recurrence?.recurrence_amount));
+								}
+							}
+							// every nth and year
+							else if (recurrence?.time_unit === 'year' &&
+								currentDate?.getDate() === new Date(event_date).getDate() &&
+								currentDate?.getMonth() === new Date(event_date).getMonth() &&
+								differenceInCalendarYears(currentDate, event_date) % parseInt(recurrence?.recurrence_amount) === 0) {
+								if (currentDate >= startDate && currentDate <= endDate) {
+									allEvents.push({
+										event_title: event_title,
+										event_date: new Date(currentDate).toLocaleString(),
+										event_description: event_description,
+										event_id: event_id,
+									});
+									currentDate = addYears(currentDate, parseInt(recurrence?.recurrence_amount));
+								}
+							}
+							currentDate.setDate(currentDate.getDate() + 1);
+						} else if (recurrence?.recurrence_type === "specific day") {
 
-						if (recurrence.time_unit === 'day') {
-							allEvents.push({
-								event_date: new Date(
-									currentDate?.getFullYear(),
-									currentDate?.getMonth(),
-									currentDate?.getDate(),
-									parseInt(recurrence?.recurrence_amount?.split(":")[0]),
-									parseInt(recurrence?.recurrence_amount?.split(":")[1])
-								)?.toISOString(),
-								event_title: event_title,
-								event_description: event_description,
-								event_id: event_id,
-							});
-							currentDate.setDate(currentDate.getDate() + 1);
-						} else if (recurrence.time_unit === 'week' && recurrence.selected_days.includes(dayOfWeek)) {
-							allEvents.push({
-								event_date: new Date(
-									currentDate?.getFullYear(),
-									currentDate?.getMonth(),
-									currentDate?.getDate(),
-									parseInt(recurrence?.recurrence_amount?.split(":")[0]),
-									parseInt(recurrence?.recurrence_amount?.split(":")[1])
-								)?.toISOString(),
-								event_title: event_title,
-								event_description: event_description,
-								event_id: event_id,
-							});
-							currentDate.setDate(currentDate.getDate() + 1);
-						} else if (recurrence?.time_unit === 'month' && currentDate.getDate() === parseInt(recurrence.recurrence_amount)) {
-							allEvents.push({
-								event_date: new Date(currentDate.getFullYear(), currentDate.getMonth(), parseInt(recurrence.recurrence_amount)).toISOString(),
-								event_title: event_title,
-								event_description: event_description,
-								event_id: event_id,
-							});
-							currentDate.setMonth(currentDate.getMonth() + 1);
-						} else if (recurrence?.time_unit === 'year' &&
-							currentDate.getDate() === parseInt(recurrence.recurrence_amount.split('-')[1]) &&
-							currentDate.getMonth() === months.indexOf(recurrence.recurrence_amount.split('-')[0])) {
-							console.log(new Date(currentDate.getFullYear(), months.indexOf(recurrence.recurrence_amount.split('-')[0]), parseInt(recurrence.recurrence_amount.split('-')[1])).toISOString(),)
-							allEvents.push({
-								event_date: new Date(currentDate.getFullYear(), months.indexOf(recurrence.recurrence_amount.split('-')[0]), parseInt(recurrence.recurrence_amount.split('-')[1])).toISOString(),
-								event_title: event_title,
-								event_description: event_description,
-								event_id: event_id,
-							});
-							currentDate.setFullYear(currentDate.getFullYear() + 1);
+						} else if (recurrence?.recurrence_type === "relative date") {
+
 						} else {
 							currentDate.setDate(currentDate.getDate() + 1);
 						}
