@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS events (
 );
 
 -- a table to keep the refersh tokens
-CREATE TABLE refresh_token (
+CREATE TABLE IF NOT EXISTS refresh_token (
     token TEXT NOT NULL,
     user_id INT NOT NULL REFERENCES "users" (id) ON DELETE CASCADE,
     expires DATE NOT NULL
