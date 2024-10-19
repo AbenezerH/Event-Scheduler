@@ -5,7 +5,7 @@ import EventList from '../../components/EventList.jsx';
 import Calendar from '../../components/Calendar.jsx';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, addWeeks, subDays, differenceInCalendarDays, addMonths, differenceInCalendarMonths, addYears, differenceInCalendarYears } from "date-fns";
+import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, addWeeks, subDays, differenceInCalendarDays, addMonths, differenceInCalendarMonths, addYears, differenceInCalendarYears, addDays } from "date-fns";
 
 
 const fetcher = async (url) => {
@@ -452,9 +452,24 @@ function Home({ setIsAuthenticated, setToken }) {
 								}
 							}
 							currentDate.setDate(currentDate.getDate() + 1);
-						} else if (recurrence?.recurrence_type === "specific day") {
-
-						} else if (recurrence?.recurrence_type === "relative date") {
+						}
+						// specific day repeating like every monday
+						else if (recurrence?.recurrence_type === "specific day") {
+							if (currentDate >= startDate && currentDate <= endDate && currentDate.getDay() === parseInt(recurrence?.recurrence_amount)) {
+								allEvents.push({
+									event_date: currentDate.toLocaleString(),
+									event_title: event_title,
+									event_description: event_description,
+									event_id: event_id,
+								})
+								currentDate = addWeeks(currentDate, 1);
+							}
+							else {
+								currentDate = addDays(currentDate, 1);
+							}
+						}
+						// repeats on relative days like the 1/3/last monday of the month/year ...
+						else if (recurrence?.recurrence_type === "relative date") {
 
 						} else {
 							currentDate.setDate(currentDate.getDate() + 1);
