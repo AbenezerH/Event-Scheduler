@@ -76,7 +76,7 @@ const EventForm = ({ event, setEvent, handleSubmit, isRecurring, setIsRecurring 
               >
                 <option value={"standard"}>Standard Recurrence</option>
                 <option value={"every nth"}>Every Nth Recurrence</option>
-                <option value={"specific day"}>Specific Unit Recurrence</option>
+                <option value={"specific day"}>Specific Day Recurrence</option>
                 <option value={"relative date"}>Relative Date Recurrence</option>
               </select>
             </div>
@@ -96,31 +96,7 @@ const EventForm = ({ event, setEvent, handleSubmit, isRecurring, setIsRecurring 
                 <option value={"year"}>Year{event?.recurrence?.recurrence_type === 'standard' && "ly"}</option>
               </select>
             </div>
-            {event?.recurrence?.recurrence_type !== 'standard' ?
-              <>
-                <div className='form-col recurrence'>
-                  <label htmlFor='recurrence-amount'>Recurrence Amount</label>
-                  <input
-                    type='number'
-                    name='recurrence-amount'
-                    value={event?.recurrence?.recurrence_amount || ""}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      setEvent(prev => ({
-                        ...prev,
-                        recurrence: {
-                          ...prev.recurrence,
-                          recurrence_amount: (value === '' || value > 0) ? value : 1
-                        },
-                      }));
-                    }}
-                  />
-                </div>
-              </> :
-              <>
-                <RecurrenceDateInput recurrenceTimeUnit={event?.recurrence?.time_unit} recurrence={event?.recurrence} setRecurrence={(data) => setEvent(prev => ({ ...prev, recurrence: data }))} />
-              </>
-            }
+            <RecurrenceDateInput recurrenceTimeUnit={event?.recurrence?.time_unit} recurrence={event?.recurrence} setRecurrence={(data) => setEvent(prev => ({ ...prev, recurrence: data }))} />
           </div>
           <div className='form-row'>
             <div className='form-col recurrence'>
