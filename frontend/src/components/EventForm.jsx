@@ -88,12 +88,17 @@ const EventForm = ({ event, setEvent, handleSubmit, isRecurring, setIsRecurring 
                 value={event?.recurrence?.time_unit || "day"}
                 onChange={(e) => setEvent(prev => ({ ...prev, recurrence: { ...prev.recurrence, time_unit: e.target.value } }))}
               >
-                <option value={""}>Select Time Unit</option>
-                <option value={"hour"}>Hour{event?.recurrence?.recurrence_type === 'standard' && "ly"}</option>
-                <option value={"day"}>{event?.recurrence?.recurrence_type === 'standard' ? "Daily" : "Day"}</option>
-                <option value={"week"}>Week{event?.recurrence?.recurrence_type === 'standard' && "ly"}</option>
-                <option value={"month"}>Month{event?.recurrence?.recurrence_type === 'standard' && "ly"}</option>
-                <option value={"year"}>Year{event?.recurrence?.recurrence_type === 'standard' && "ly"}</option>
+                {event?.recurrence?.recurrence_type !== 'specific day' ? (
+                  <>
+                    <option value={""}>Select Time Unit</option>
+                    <option value={"day"}>{event?.recurrence?.recurrence_type === 'standard' ? "Daily" : "Day"}</option>
+                    <option value={"week"}>Week{event?.recurrence?.recurrence_type === 'standard' && "ly"}</option>
+                    <option value={"month"}>Month{event?.recurrence?.recurrence_type === 'standard' && "ly"}</option>
+                    <option value={"year"}>Year{event?.recurrence?.recurrence_type === 'standard' && "ly"}</option>
+                  </>
+                ) : (
+                  <option value={"day"}>Day</option>
+                )}
               </select>
             </div>
             <RecurrenceDateInput recurrenceTimeUnit={event?.recurrence?.time_unit} recurrence={event?.recurrence} setRecurrence={(data) => setEvent(prev => ({ ...prev, recurrence: data }))} />
