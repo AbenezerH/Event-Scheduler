@@ -6,6 +6,7 @@ const pool = require("../pool");
 
 router.get("/", authenticate, async (req, res) => {
     try {
+        const { user_id } = req.user_id;
         const query = `
             SELECT
                 e.*,
@@ -18,7 +19,7 @@ router.get("/", authenticate, async (req, res) => {
             FROM events e
             LEFT JOIN recurrence r ON e.recurrence_id = r.id
         `;
-        const resp = await pool.query(query);
+        const resp = await pool.query(query + ' WHERE user_id = $1', [user_id]);
         res.json(resp.rows.map(row => ({ ...row, selected_days: row?.selected_days?.days })));
     } catch (error) {
         console.error('Error during fetching data:\n', error);
@@ -29,7 +30,6 @@ router.get("/", authenticate, async (req, res) => {
 router.post("/", authenticate, async (req, res) => {
     try {
         const {
-            user_id,
             event_title,
             event_description,
             event_date,
@@ -38,11 +38,11 @@ router.post("/", authenticate, async (req, res) => {
             recurrence // This includes all recurrence fields if provided
         } = req.body;
 
+        const { user_id } = req.user_id;
 
-        let formattedDate = event_date && new Date(event_date)?.toISOString();
+        let formattedDate = event_date && new Date(event_date)?.toLocaleString();
 
         if (recurrence) {
-            console.log(recurrence.selected_days);
             // Insert recurrence data and get the recurrence_id
             const recurrenceResp = await pool.query(
                 "INSERT INTO recurrence (recurrence_type, time_unit, recurrence_amount, relative_recurrence_by, selected_days, recurrence_description) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
@@ -74,12 +74,12 @@ router.post("/", authenticate, async (req, res) => {
 router.put("/:id", authenticate, async (req, res) => {
     try {
         const { id } = req.params;
-        const { user_id, event_title, event_description, event_date, event_location, event_organizer, recurrence } = req.body;
+        const { user_id } = req.user_id;
+        const { event_title, event_description, event_date, event_location, event_organizer, recurrence } = req.body;
 
-        let formattedDate = event_date && new Date(event_date)?.toISOString();
+        let formattedDate = event_date && new Date(event_date)?.toLocaleString();
 
         if (recurrence) {
-            console.log(recurrence)
             // Update recurrence data
             const resp1 = await pool.query(
                 "UPDATE recurrence SET recurrence_type = $1, time_unit = $2, recurrence_amount = $3, relative_recurrence_by = $4, selected_days = $5, recurrence_description = $6 WHERE id = $7 RETURNING *",
@@ -110,7 +110,6 @@ router.delete("/:id", authenticate, async (req, res) => {
     const { id } = req.params;
     try {
         const resp = await pool.query("DELETE FROM events WHERE id = $1", [Number(id)]);
-        console.log(resp.rowCount, id);
         if (resp.rowCount === 0) {
             return res.status(404).json({ error: 'Event not found' });
         }
