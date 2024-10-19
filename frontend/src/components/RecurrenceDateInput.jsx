@@ -4,6 +4,8 @@ import DateNumberPicker from "./DateNumberPicker.jsx";
 import YearlyPickerWrapper from "./YearlyEventPicker.jsx";
 import { useState } from "react";
 
+const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
 const RecurrenceDateInput = ({ recurrenceTimeUnit, recurrence, setRecurrence }) => {
   const [showDayPicker, setShowDayPicker] = useState(false);
 
@@ -55,9 +57,46 @@ const RecurrenceDateInput = ({ recurrenceTimeUnit, recurrence, setRecurrence }) 
         break;
     }
   }
+  else if (recurrence?.recurrence_type === "every nth") {
+    inputType = (
+      <div className='form-col recurrence'>
+        <input
+          type='number'
+          name='recurrence-amount'
+          value={recurrence?.recurrence_amount || ""}
+          onChange={(e) => {
+            const value = e.target.value;
+            setRecurrence({ ...recurrence, recurrence_amount: (value === '' || value > 0) ? value : 1 });
+          }}
+        />
+      </div>)
+  }
   else if (recurrence?.recurrence_type === "specific day") {
+    inputType = (
+      <select
+        name="specific-day"
+        aria-label="choose-specific-day"
+        className="type-select"
+        value={recurrence && recurrence.recurrence_amount || 1}
+        onChange={(e) => setRecurrence({ ...recurrence, recurrence_amount: e.target.value })}
+        required
+      >
+        {daysOfWeek.map((day, index) => <option value={index} key={index}>{day}</option>)}
+      </select>)
   }
   else if (recurrence?.recurrence_type === "relative date") {
+    inputType = (
+      <div className='form-col recurrence'>
+        <input
+          type='number'
+          name='recurrence-amount'
+          value={recurrence?.recurrence_amount || ""}
+          onChange={(e) => {
+            const value = e.target.value;
+            setRecurrence({ ...recurrence, recurrence_amount: (value === '' || value > 0) ? value : 1 });
+          }}
+        />
+      </div>)
   }
 
   return (
