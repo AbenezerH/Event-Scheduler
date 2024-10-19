@@ -2,9 +2,8 @@ import MinutePicker from "./MinutePicker";
 import DayPicker from "./DayPicker";
 import DateNumberPicker from "./DateNumberPicker.jsx";
 import YearlyPickerWrapper from "./YearlyEventPicker.jsx";
+import FullDayPicker from "./FullDayPicker.jsx";
 import { useState } from "react";
-
-const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 const RecurrenceDateInput = ({ recurrenceTimeUnit, recurrence, setRecurrence }) => {
   const [showDayPicker, setShowDayPicker] = useState(false);
@@ -72,17 +71,7 @@ const RecurrenceDateInput = ({ recurrenceTimeUnit, recurrence, setRecurrence }) 
       </div>)
   }
   else if (recurrence?.recurrence_type === "specific day") {
-    inputType = (
-      <select
-        name="specific-day"
-        aria-label="choose-specific-day"
-        className="type-select"
-        value={recurrence && recurrence.recurrence_amount || 1}
-        onChange={(e) => setRecurrence({ ...recurrence, recurrence_amount: e.target.value })}
-        required
-      >
-        {daysOfWeek.map((day, index) => <option value={index} key={index}>{day}</option>)}
-      </select>)
+    inputType = <FullDayPicker recurrence={recurrence} setRecurrence={setRecurrence} />
   }
   else if (recurrence?.recurrence_type === "relative date") {
     inputType = (
