@@ -12,7 +12,7 @@ const authenticate = (req, res, next) => {
     try {
         jwt.verify(token, jwtSecret, (err, event_id) => {
             if (err) return res.sendStatus(403);
-            req.id = event_id;
+            req.user_id = event_id;
             next();
         });
     } catch (e) {
