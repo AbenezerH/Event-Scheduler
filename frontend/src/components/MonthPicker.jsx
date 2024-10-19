@@ -5,6 +5,7 @@ const MonthPicker = ({ selectedMonth, setSelectedMonth, recurrence, setRecurrenc
         <div className="month-picker">
             {months.map((month, index) => (
                 <button
+                    type="button"
                     key={index}
                     className={`month-button ${selectedMonth === month ? 'selected' : ''}`}
                     onClick={() => {

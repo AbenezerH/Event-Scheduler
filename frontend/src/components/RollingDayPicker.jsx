@@ -75,6 +75,7 @@ const RollingDayPicker = ({ recurrence, setRecurrence, handleRecurrenceChange, c
             <div className="rolling-day-picker">
                 {getDisplayedDays().map((day, index) => (
                     <button
+                        type='button'
                         key={index}
                         name='chosen-date'
                         className={`day-button ${day === currentDay ? 'current' : ''}`}
