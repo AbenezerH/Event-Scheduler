@@ -221,7 +221,7 @@ function Home({ setIsAuthenticated, setToken }) {
 			} else {
 				addEvent();
 			}
-			setCurrentEvent({ event_title: '', event_description: '', event_location: '', event_organizer: '', event_date: '', recurrence: { recurrence_type: 'standard', time_unit: 'day' } });
+			setCurrentEvent({ event_title: '', event_description: '', event_location: '', event_organizer: '', event_date: '', recurrence: { recurrence_type: 'standard', time_unit: 'day', recurrence_amount: '1' } });
 		}
 	};
 
@@ -322,7 +322,6 @@ function Home({ setIsAuthenticated, setToken }) {
 
 			events.forEach(event => {
 				const { event_id, event_description, event_date, event_title, recurrence } = event;
-				// const currentDate = new Date(startDate);
 				const eventDate = new Date(event_date);
 
 				if (!recurrence?.recurrence_id && eventDate >= startDate && eventDate <= endDate) {
