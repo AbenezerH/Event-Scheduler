@@ -90,11 +90,13 @@ const EventForm = ({ event, setEvent, handleSubmit, isRecurring, setIsRecurring 
               >
                 {event?.recurrence?.recurrence_type !== 'specific day' ? (
                   <>
-                    <option value={""}>Select Time Unit</option>
-                    <option value={"day"}>{event?.recurrence?.recurrence_type === 'standard' ? "Daily" : "Day"}</option>
-                    <option value={"week"}>Week{event?.recurrence?.recurrence_type === 'standard' && "ly"}</option>
-                    <option value={"month"}>Month{event?.recurrence?.recurrence_type === 'standard' && "ly"}</option>
-                    <option value={"year"}>Year{event?.recurrence?.recurrence_type === 'standard' && "ly"}</option>
+                    {event?.recurrence?.recurrence_type === 'relative day' && <>
+                      <option value={""}>Select Time Unit</option>
+                      <option value={"day"}>{event?.recurrence?.recurrence_type === 'standard' ? "Daily" : "Day"}</option>
+                      <option value={"week"}>Week{event?.recurrence?.recurrence_type === 'standard' && "ly"}</option>
+                    </>}
+                    <option value={"month"}>Month{(event?.recurrence?.recurrence_type === 'standard' || event?.recurrence?.recurrence_type === 'relative date') && "ly"}</option>
+                    <option value={"year"}>Year{(event?.recurrence?.recurrence_type === 'standard' || event?.recurrence?.recurrence_type === 'relative date') && "ly"}</option>
                   </>
                 ) : (
                   <option value={"day"}>Day</option>
