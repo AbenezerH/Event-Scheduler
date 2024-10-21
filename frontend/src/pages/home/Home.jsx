@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import EventForm from '../../components/EventForm.jsx';
 import EventList from '../../components/EventList.jsx';
 import Calendar from '../../components/Calendar.jsx';
+import SmallHeader from "../../components/SmallHeader.jsx"
 import axios from 'axios';
 import { startOfMonth, isSameDay, getDay, eachDayOfInterval, endOfMonth, startOfWeek, endOfWeek, addWeeks, subDays, differenceInCalendarDays, addMonths, differenceInCalendarMonths, addYears, differenceInCalendarYears, addDays } from "date-fns";
 
@@ -98,7 +99,7 @@ const getOrdinalWeekday = (date) => {
 
 
 // Home/main Component
-function Home({ userId, loading }) {
+function Home({ userId, loading, setIsAuthenticated, setToken }) {
 	const [events, setEvents] = useState([]);
 	const [eventsRecurringDate, setEventsRecurringDate] = useState([]);
 	const [isRecurring, setIsRecurring] = useState(false);
@@ -106,104 +107,6 @@ function Home({ userId, loading }) {
 	const [isDarkTheme, setIsDarkTheme] = useState(true);
 	const [activeTab, setActiveTab] = useState('list');
 	const [currentDate, setCurrentDate] = useState(new Date());
-
-	// useEffect(() => {
-	// 	const checkTokenExpiration = () => {
-	// 		const storedToken = JSON.parse(localStorage.getItem('token'));
-	// 		if (storedToken && storedToken.value) {
-	// 			const currentTime = new Date().getTime();
-	// 			console.log(currentTime, storedToken.expiration);
-	// 			if (currentTime > storedToken.expiration) {
-	// 				refreshAuthToken(storedToken.refreshToken);
-	// 			} else {
-	// 				try {
-	// 					const decodedToken = jwtDecode(storedToken.value);
-	// 					setIsAuthenticated(true);
-	// 					setUserId(decodedToken.user_id);
-	// 					setLoading(false);
-	// 				} catch (error) {
-	// 					console.error('Invalid token:', error);
-	// 					setIsAuthenticated(false);
-	// 					setLoading(false);
-	// 				}
-	// 			}
-	// 		} else {
-	// 			setIsAuthenticated(false);
-	// 			setLoading(false);
-	// 		}
-	// 	};
-
-	// 	/* const refreshAuthToken = async (refreshToken) => {
-	// 		try {
-	// 			const res = await axios.post('http://localhost:5000/token', {}, { withCredentials: true });
-	// 			console.log('Refresh Response:', res.data);
-	// 			const data = res.data;
-	// 			if (data && data.token) {
-	// 				try {
-	// 					const decodedToken = jwtDecode(data.token);
-	// 					const expirationTime = new Date().getTime() + 3600 * 1000; // 1 hour from now
-	// 					const newToken = {
-	// 						value: data.token,
-	// 						refreshToken: refreshToken,
-	// 						expiration: expirationTime
-	// 					};
-	// 					localStorage.setItem('token', JSON.stringify(newToken));
-	// 					setIsAuthenticated(true);
-	// 					setUserId(decodedToken.user_id);
-	// 					setLoading(false);
-	// 				} catch (error) {
-	// 					console.error('Invalid token:', error);
-	// 					setIsAuthenticated(false);
-	// 					setLoading(false);
-	// 				}
-	// 			} else {
-	// 				setIsAuthenticated(false);
-	// 				setLoading(false);
-	// 			}
-	// 		} catch (error) {
-	// 			console.error(error);
-	// 			setIsAuthenticated(false);
-	// 			setLoading(false);
-	// 		}
-	// 	}; */
-
-	// 	const refreshAuthToken = async (refreshToken) => {
-	// 		try {
-	// 			const res = await axios.post('http://localhost:5000/token', {}, { withCredentials: true });
-	// 			console.log('Refresh Response:', res.data);
-	// 			const data = res.data;
-	// 			if (data && data.token) {
-	// 				try {
-	// 					const decodedToken = jwtDecode(data.token);
-	// 					const expirationTime = new Date().getTime() + 5 * 60 * 1000; // 5 minutes from now
-	// 					const newToken = { value: data.token, refreshToken: refreshToken, expiration: expirationTime };
-	// 					localStorage.setItem('token', JSON.stringify(newToken));
-	// 					console.log("Token refreshed:", newToken);
-	// 					setIsAuthenticated(true);
-	// 					setUserId(decodedToken.user_id);
-	// 					setLoading(false);
-	// 				} catch (error) {
-	// 					console.error('Invalid token:', error);
-	// 					setIsAuthenticated(false);
-	// 					setLoading(false);
-	// 				}
-	// 			} else {
-	// 				setIsAuthenticated(false);
-	// 				setLoading(false);
-	// 			}
-	// 		} catch (error) {
-	// 			console.error(error);
-	// 			setIsAuthenticated(false);
-	// 			setLoading(false);
-	// 		}
-	// 	};
-
-
-	// 	checkTokenExpiration();
-	// 	const intervalId = setInterval(checkTokenExpiration, 5 * 60 * 1000); // Check every 5 minutes
-
-	// 	return () => clearInterval(intervalId);
-	// }, [setIsAuthenticated, setToken]);
 
 	useEffect(() => {
 		fetchEvents();
@@ -540,6 +443,7 @@ function Home({ userId, loading }) {
 
 	return (
 		<div className="container">
+			<SmallHeader setIsAuthenticated={setIsAuthenticated} setToken={setToken} />
 			<div className="theme-toggle">
 				<label className="switch">
 					<input type="checkbox" checked={isDarkTheme} onChange={toggleTheme} />

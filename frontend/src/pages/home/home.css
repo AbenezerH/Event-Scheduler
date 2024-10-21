@@ -162,3 +162,20 @@
     width: 100%;
     gap: 5px;
 }
+
+.small-header-container {
+    display: flex;
+    justify-content: right;
+}
+
+.small-header {
+    display: flex;
+    justify-content: right;
+    cursor: pointer;
+    margin-bottom: 10px;
+    background-color: #667eea;
+    color: #333;
+    border-radius: 12px;
+    padding: 5px 20px;
+    min-width: max-content;
+}
