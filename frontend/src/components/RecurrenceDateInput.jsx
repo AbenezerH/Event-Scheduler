@@ -83,15 +83,25 @@ const RecurrenceDateInput = ({ recurrenceTimeUnit, recurrence, setEvent }) => {
         </div>
         <div className="form-col gap-5">
           <label htmlFor="recurrence-amount">Relative Number</label>
-          <input
+          <select
             type='number'
             name='recurrence-amount'
-            value={recurrence?.recurrence_amount || ""}
+            className="type-select"
+            aria-label="choose-specific-day"
+            value={recurrence?.relative_recurrence_by || ""}
             onChange={(e) => {
               const value = e.target.value;
-              setEvent(prev => ({ ...prev, recurrence: { ...prev.recurrence, recurrence_amount: (value === '' || value > 0) ? value : 1 } }));
+              setEvent(prev => ({ ...prev, recurrence: { ...prev.recurrence, relative_recurrence_by: value } }));
             }}
-          />
+          >
+            <option value={"first"}>First</option>
+            <option value={1}>1</option>
+            <option value={2}>2</option>
+            <option value={3}>3</option>
+            <option value={4}>4</option>
+            <option value={5}>5</option>
+            <option value={"last"}>Last</option>
+          </select>
         </div>
       </div>
     )
