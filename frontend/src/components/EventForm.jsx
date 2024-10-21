@@ -90,7 +90,7 @@ const EventForm = ({ event, setEvent, handleSubmit, isRecurring, setIsRecurring 
               >
                 {event?.recurrence?.recurrence_type !== 'specific day' ? (
                   <>
-                    {event?.recurrence?.recurrence_type === 'relative day' && <>
+                    {event?.recurrence?.recurrence_type !== 'relative date' && <>
                       <option value={""}>Select Time Unit</option>
                       <option value={"day"}>{event?.recurrence?.recurrence_type === 'standard' ? "Daily" : "Day"}</option>
                       <option value={"week"}>Week{event?.recurrence?.recurrence_type === 'standard' && "ly"}</option>
@@ -108,7 +108,69 @@ const EventForm = ({ event, setEvent, handleSubmit, isRecurring, setIsRecurring 
           <div className='form-row'>
             <div className='form-col recurrence'>
               <label htmlFor='recurrence-description'>Recurrence Description</label>
-              <textarea placeholder='No Recurrence Chosen' readOnly value={JSON.stringify(event?.recurrence)} />
+              <textarea
+                placeholder='No Recurrence Chosen'
+                readOnly
+                value={(() => {
+                  const { recurrence_type, time_unit, recurrence_amount, selected_days, relative_recurrence_by } = event.recurrence;
+
+                  const convertTimeTo12Hour = (time24) => {
+                    let [hours, minutes] = time24.split(':');
+                    hours = parseInt(hours, 10);
+                    const ampm = hours >= 12 ? 'PM' : 'AM';
+                    hours = hours % 12 || 12; // Convert 0 to 12 for midnight
+                    return `${hours}:${minutes || '00'} ${ampm}`;
+                  };
+
+                  const getDaySuffix = (day) => {
+                    if (day > 3 && day < 21) return 'th';
+                    switch (day % 10) {
+                      case 1: return 'st';
+                      case 2: return 'nd';
+                      case 3: return 'rd';
+                      default: return 'th';
+                    }
+                  };
+
+                  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+                  console.log(recurrence_type)
+                  if (recurrence_type === 'standard') {
+                    if (time_unit === 'day') {
+                      return `This event recurs daily at ${convertTimeTo12Hour(recurrence_amount)}.`;
+                    } else if (time_unit === 'week') {
+                      return `This event recurs weekly on the specified days which are ${selected_days ? selected_days?.join(", ") : "unspecified days"} at the time of ${convertTimeTo12Hour(recurrence_amount)}.`;
+                    } else if (time_unit === 'month') {
+                      return `This event recurs monthly on the same date which is on the ${recurrence_amount}${getDaySuffix(recurrence_amount)} of the month.`;
+                    } else if (time_unit === 'year') {
+                      return `This event recurs yearly on the same date which is on ${recurrence_amount}.`;
+                    }
+                  } else if (recurrence_type === 'every nth') {
+                    if (time_unit === 'day') {
+                      return `This event recurs every ${recurrence_amount} day(s).`;
+                    } else if (time_unit === 'week') {
+                      return `This event recurs every ${recurrence_amount} week(s).`;
+                    } else if (time_unit === 'month') {
+                      return `This event recurs every ${recurrence_amount} month(s).`;
+                    } else if (time_unit === 'year') {
+                      return `This event recurs every ${recurrence_amount} year(s).`;
+                    }
+                  } else if (recurrence_type === 'specific day') {
+                    return `This event recurs on every ${daysOfWeek?.[parseInt(recurrence_amount)]} at ${convertTimeTo12Hour(new Date(event.event_date).getHours() + ":" + new Date(event.event_date).getMinutes())}.`;
+                  } else if (recurrence_type === 'relative date') {
+                    if (time_unit === "month") {
+                      return `This event recurs on the ${relative_recurrence_by || ''}${(isNaN(relative_recurrence_by) && relative_recurrence_by) || ''} ${daysOfWeek?.[parseInt(recurrence_amount)] || ''} of every month.`;
+                    } else if (time_unit === 'year') {
+                      return `This event recurs on the ${relative_recurrence_by || ''}${(isNaN(relative_recurrence_by) && relative_recurrence_by) || ''} ${daysOfWeek?.[parseInt(recurrence_amount)] || ''} of ${event.event_date && new Date(event.event_date)?.toLocaleString('default', { month: 'long' })} every year.`;
+                    }
+                    else {
+                      return 'This event recurs on relative weekdays compared to the month or year'
+                    }
+                  }
+
+                  return `No Recurrence Chosen`;
+                })()}
+              />
             </div>
           </div>
         </>
