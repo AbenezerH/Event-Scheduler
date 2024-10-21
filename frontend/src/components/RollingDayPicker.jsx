@@ -20,7 +20,7 @@ const getDaysInMonth = (monthName, year) => {
     return new Date(year, monthIndex + 1, 0).getDate();
 };
 
-const RollingDayPicker = ({ recurrence, setRecurrence, handleRecurrenceChange, currentMonth }) => {
+const RollingDayPicker = ({ recurrence, setEvent, handleRecurrenceChange, currentMonth }) => {
     const year = new Date().getFullYear();
     const daysInMonth = getDaysInMonth(currentMonth, year) || 31;
     const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
@@ -32,7 +32,7 @@ const RollingDayPicker = ({ recurrence, setRecurrence, handleRecurrenceChange, c
 
     const handleDayChange = (day) => {
         setCurrentDay(day);
-        handleRecurrenceChange('day', `${day}${getDaySuffix(day)}`, recurrence, setRecurrence);
+        handleRecurrenceChange('day', `${day}${getDaySuffix(day)}`, recurrence);
     };
 
     const handleScroll = useCallback((e) => {

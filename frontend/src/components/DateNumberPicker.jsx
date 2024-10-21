@@ -8,13 +8,13 @@ const getDaySuffix = (day) => {
     }
 };
 
-const DateNumberPicker = ({ recurrence, setRecurrence }) => {
+const DateNumberPicker = ({ recurrence, setEvent }) => {
     const dayOptions = Array.from({ length: 31 }, (_, i) => (i + 1).toString());
 
     return (
         <select
             value={recurrence?.recurrence_amount ?? '1st'}
-            onChange={(e) => setRecurrence({ ...recurrence, recurrence_amount: e.target.value })}
+            onChange={(e) => setEvent(prev => ({ ...prev, recurrence: { ...prev.recurrence, recurrence_amount: e.target.value } }))}
             aria-label="day-picker"
             className="custom-select select-col minute-select"
         >

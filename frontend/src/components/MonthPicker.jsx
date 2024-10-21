@@ -1,6 +1,6 @@
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-const MonthPicker = ({ selectedMonth, setSelectedMonth, recurrence, setRecurrence, handleRecurrenceChange }) => {
+const MonthPicker = ({ selectedMonth, setEvent, setSelectedMonth, recurrence, handleRecurrenceChange }) => {
     return (
         <div className="month-picker">
             {months.map((month, index) => (
@@ -10,7 +10,7 @@ const MonthPicker = ({ selectedMonth, setSelectedMonth, recurrence, setRecurrenc
                     className={`month-button ${selectedMonth === month ? 'selected' : ''}`}
                     onClick={() => {
                         setSelectedMonth(month);
-                        handleRecurrenceChange('month', month, recurrence, setRecurrence);
+                        handleRecurrenceChange('month', month, recurrence);
                     }}
                 >
                     {month}
