@@ -1,6 +1,5 @@
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, addDays, isSameDay } from "date-fns";
 
-
 // CalendarGrid Component
 const CalendarGrid = ({ currentDate, eventDates, }) => {
     const startOfMonthVar = startOfMonth(currentDate);
@@ -30,7 +29,7 @@ const CalendarGrid = ({ currentDate, eventDates, }) => {
                 >
                     <div className="calendar-day-header">{format(day, dateFormat)}</div>
                     {eventsForDay?.sort((a, b) => new Date(a.event_date) - new Date(b.event_date)).map((event, index) => (
-                        <div key={event.id + ' ' + index} className="calendar-event" title={event.event_description}>
+                        <div key={event?.event_id + ' ' + index} className="calendar-event" title={event.event_description}>
                             {formatEventTime(event.event_date)} {event.event_title}
                         </div>
                     ))}
