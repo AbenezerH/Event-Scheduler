@@ -5,14 +5,15 @@ import YearlyPickerWrapper from "./YearlyEventPicker.jsx";
 import FullDayPicker from "./FullDayPicker.jsx";
 import { useState } from "react";
 
-const RecurrenceDateInput = ({ recurrenceTimeUnit, recurrence, setRecurrence }) => {
+const RecurrenceDateInput = ({ recurrenceTimeUnit, recurrence, setEvent }) => {
+
   const [showDayPicker, setShowDayPicker] = useState(false);
 
   let inputType;
   if (recurrence?.recurrence_type === "standard") {
     switch (recurrenceTimeUnit) {
       case 'hour':
-        inputType = <MinutePicker recurrence={recurrence} setRecurrence={setRecurrence} />;
+        inputType = <MinutePicker recurrence={recurrence} setEvent={setEvent} />;
         break;
       case 'day':
         inputType = (
@@ -21,7 +22,7 @@ const RecurrenceDateInput = ({ recurrenceTimeUnit, recurrence, setRecurrence }) 
             aria-label='event-date'
             className='recurrence-date-input'
             value={recurrence && recurrence.recurrence_amount ? recurrence.recurrence_amount : ''}
-            onChange={(e) => setRecurrence({ ...recurrence, recurrence_amount: e.target.value })}
+            onChange={(e) => setEvent(prev => ({ ...prev, recurrence: { ...prev.recurrence, recurrence_amount: e.target.value } }))}
             required
           />
         );
@@ -32,15 +33,15 @@ const RecurrenceDateInput = ({ recurrenceTimeUnit, recurrence, setRecurrence }) 
             <button type="button" className="btn-day-show" onClick={() => setShowDayPicker(prev => !prev)}>
               {showDayPicker ? 'Hide Day Picker' : 'Show Day Picker'}
             </button>
-            {showDayPicker && <DayPicker recurrence={recurrence} setRecurrence={setRecurrence} />}
+            {showDayPicker && <DayPicker recurrence={recurrence} setEvent={setEvent} />}
           </div>
         );
         break;
       case 'month':
-        inputType = <DateNumberPicker recurrence={recurrence} setRecurrence={setRecurrence} />
+        inputType = <DateNumberPicker recurrence={recurrence} setEvent={setEvent} />
         break;
       case 'year':
-        inputType = <YearlyPickerWrapper recurrence={recurrence} setRecurrence={setRecurrence} />
+        inputType = <YearlyPickerWrapper recurrence={recurrence} setEvent={setEvent} />
         break;
       default:
         inputType = (
@@ -49,7 +50,7 @@ const RecurrenceDateInput = ({ recurrenceTimeUnit, recurrence, setRecurrence }) 
             aria-label='event-date'
             className='recurrence-date-input'
             value={recurrence && recurrence.event_date ? recurrence.event_date : ''}
-            onChange={(e) => setRecurrence({ ...recurrence, event_date: e.target.value })}
+            onChange={(e) => setEvent(prev => ({ ...prev, recurrence: { ...prev.recurrence, event_date: e.target.value } }))}
             required
           />
         );
@@ -65,32 +66,40 @@ const RecurrenceDateInput = ({ recurrenceTimeUnit, recurrence, setRecurrence }) 
           value={recurrence?.recurrence_amount || ""}
           onChange={(e) => {
             const value = e.target.value;
-            setRecurrence({ ...recurrence, recurrence_amount: (value === '' || value > 0) ? value : 1 });
+            setEvent(prev => ({ ...prev, recurrence: { ...prev.recurrence, recurrence_amount: (value === '' || value > 0) ? value : 1 } }));
           }}
         />
       </div>)
   }
   else if (recurrence?.recurrence_type === "specific day") {
-    inputType = <FullDayPicker recurrence={recurrence} setRecurrence={setRecurrence} />
+    inputType = <FullDayPicker recurrence={recurrence} setEvent={setEvent} />
   }
   else if (recurrence?.recurrence_type === "relative date") {
     inputType = (
-      <div className='form-col recurrence'>
-        <input
-          type='number'
-          name='recurrence-amount'
-          value={recurrence?.recurrence_amount || ""}
-          onChange={(e) => {
-            const value = e.target.value;
-            setRecurrence({ ...recurrence, recurrence_amount: (value === '' || value > 0) ? value : 1 });
-          }}
-        />
-      </div>)
+      <div className='relative-date inputs'>
+        <div className="form-col gap-5">
+          <label htmlFor="recurrence-amount">Day</label>
+          <FullDayPicker recurrence={recurrence} setEvent={setEvent} />
+        </div>
+        <div className="form-col gap-5">
+          <label htmlFor="recurrence-amount">Relative Number</label>
+          <input
+            type='number'
+            name='recurrence-amount'
+            value={recurrence?.recurrence_amount || ""}
+            onChange={(e) => {
+              const value = e.target.value;
+              setEvent(prev => ({ ...prev, recurrence: { ...prev.recurrence, recurrence_amount: (value === '' || value > 0) ? value : 1 } }));
+            }}
+          />
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className={`${recurrenceTimeUnit === 'hour' && "select-col"} form-col recurrence`}>
-      <label htmlFor='recurrence-amount'>Recurrence Amount</label>
+      {recurrence?.recurrence_type !== "relative date" && (<label htmlFor='recurrence-amount'>Recurrence Amount</label>)}
       {inputType}
     </ div>
   );
