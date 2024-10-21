@@ -29,6 +29,16 @@ h2 {
   text-align: center;
 }
 
+.dark-theme .event-title {
+  text-align: left;
+  color: #e0e0e0;
+}
+
+.light-theme .event-title {
+  text-align: left;
+  color: #333;
+}
+
 .dark-theme h1,
 .dark-theme h2 {
   color: #bb86fc;
