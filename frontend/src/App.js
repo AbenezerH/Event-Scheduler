@@ -21,11 +21,9 @@ const App = () => {
       const storedToken = JSON.parse(localStorage.getItem('token'));
       if (storedToken && storedToken.value) {
         const currentTime = new Date().getTime();
-        console.log(currentTime, storedToken.expiration);
         if (currentTime > storedToken.expiration) {
           refreshAuthToken(storedToken.refreshToken);
         } else {
-          console.log("else")
           try {
             const decodedToken = jwtDecode(storedToken.value);
             setIsAuthenticated(true);
