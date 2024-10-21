@@ -5,7 +5,7 @@ import EventList from '../../components/EventList.jsx';
 import Calendar from '../../components/Calendar.jsx';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, addWeeks, subDays, differenceInCalendarDays, addMonths, differenceInCalendarMonths, addYears, differenceInCalendarYears, addDays } from "date-fns";
+import { startOfMonth, isSameDay, getDay, eachDayOfInterval, endOfMonth, startOfWeek, endOfWeek, addWeeks, subDays, differenceInCalendarDays, addMonths, differenceInCalendarMonths, addYears, differenceInCalendarYears, addDays } from "date-fns";
 
 
 const fetcher = async (url) => {
@@ -79,6 +79,24 @@ const formatDate = (date) => {
 	const ret = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 	return ret
 };
+
+// get the a weeknumber for a date like if it is the 2 monday in a month
+const getOrdinalWeekday = (date) => {
+	const monthStart = startOfMonth(date);
+	const monthEnd = endOfMonth(date);
+	const targetDay = getDay(date);
+
+	const allDays = eachDayOfInterval({ start: monthStart, end: monthEnd })
+		.filter(d => getDay(d) === targetDay);
+
+	const isFirst = isSameDay(date, allDays[0]);
+	const isLast = isSameDay(date, allDays[allDays.length - 1]);
+
+	const weekNumber = allDays.findIndex(d => isSameDay(d, date)) + 1;
+
+	return { weekNumber, isFirst, isLast };
+};
+
 
 // Home/main Component
 function Home({ setIsAuthenticated, setToken }) {
@@ -421,7 +439,7 @@ function Home({ setIsAuthenticated, setToken }) {
 									currentDate = subDays(addWeeks(currentDate, parseInt(recurrence?.recurrence_amount)), 1)
 								}
 							}
-							// every nth and week
+							// every nth and month
 							else if (recurrence?.time_unit === 'month' &&
 								currentDate?.getDate() === new Date(event_date)?.getDate() &&
 								differenceInCalendarMonths(currentDate, event_date) % parseInt(recurrence?.recurrence_amount) === 0) {
@@ -469,7 +487,43 @@ function Home({ setIsAuthenticated, setToken }) {
 						}
 						// repeats on relative days like the 1/3/last monday of the month/year ...
 						else if (recurrence?.recurrence_type === "relative date") {
+							const { weekNumber, isFirst, isLast } = getOrdinalWeekday(currentDate);
 
+							// relative date and month
+							if (recurrence?.time_unit === 'month' &&
+								currentDate?.getDay() === parseInt(recurrence?.recurrence_amount) &&
+								((weekNumber === parseInt(recurrence?.relative_recurrence_by)) ||
+									(isFirst && recurrence?.relative_recurrence_by === "first") ||
+									(isLast && recurrence?.relative_recurrence_by === 'last'))) {
+								if (currentDate >= startDate && currentDate <= endDate) {
+									allEvents.push({
+										event_title: event_title,
+										event_date: new Date(currentDate).toLocaleString(),
+										event_description: event_description,
+										event_id: event_id,
+									});
+									console.log("current Date", currentDate, "week Number:", weekNumber, "isFirst:", isFirst, "isLast:", isLast)
+									currentDate = addWeeks(currentDate, 1);
+								}
+							}
+							// relative date and year
+							else if (recurrence?.time_unit === 'year' &&
+								currentDate?.getDay() === parseInt(recurrence?.recurrence_amount) &&
+								currentDate?.getMonth() === new Date(event_date).getMonth() &&
+								((weekNumber === parseInt(recurrence?.relative_recurrence_by)) ||
+									(isFirst && recurrence?.relative_recurrence_by === "first") ||
+									(isLast && recurrence?.relative_recurrence_by === 'last'))) {
+								if (currentDate >= startDate && currentDate <= endDate) {
+									allEvents.push({
+										event_title: event_title,
+										event_date: new Date(currentDate).toLocaleString(),
+										event_description: event_description,
+										event_id: event_id,
+									});
+									currentDate = addYears(currentDate, parseInt(recurrence?.recurrence_amount));
+								}
+							}
+							currentDate.setDate(currentDate.getDate() + 1);
 						} else {
 							currentDate.setDate(currentDate.getDate() + 1);
 						}
