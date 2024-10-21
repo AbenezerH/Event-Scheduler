@@ -11,7 +11,7 @@ const EventForm = ({ event, setEvent, handleSubmit, isRecurring, setIsRecurring 
             type="text"
             aria-label='event-title'
             value={event && event.event_title ? event.event_title : ''}
-            onChange={(e) => setEvent({ ...event, event_title: e.target.value })}
+            onChange={(e) => setEvent(prev => ({ ...prev, event_title: e.target.value }))}
             placeholder="Event Title"
             required
           />
@@ -19,14 +19,14 @@ const EventForm = ({ event, setEvent, handleSubmit, isRecurring, setIsRecurring 
             type="text"
             aria-label='event-location'
             value={event && event.event_location ? event.event_location : ''}
-            onChange={(e) => setEvent({ ...event, event_location: e.target.value })}
+            onChange={(e) => setEvent(prev => ({ ...prev, event_location: e.target.value }))}
             placeholder="Event Location"
           />
           <input
             type="text"
             aria-label='event-organizer'
             value={event && event.event_organizer ? event.event_organizer : ''}
-            onChange={(e) => setEvent({ ...event, event_organizer: e.target.value })}
+            onChange={(e) => setEvent(prev => ({ ...prev, event_organizer: e.target.value }))}
             placeholder="Event Organizer"
           />
           <input
@@ -34,7 +34,7 @@ const EventForm = ({ event, setEvent, handleSubmit, isRecurring, setIsRecurring 
             aria-label='event-date'
             className='date-input'
             value={event && event.event_date ? event.event_date : ''}
-            onChange={(e) => setEvent({ ...event, event_date: e.target.value })}
+            onChange={(e) => setEvent(prev => ({ ...prev, event_date: e.target.value }))}
             required
           />
           <div className="recurrence-toggle-wrapper">
@@ -57,7 +57,7 @@ const EventForm = ({ event, setEvent, handleSubmit, isRecurring, setIsRecurring 
           <textarea
             aria-label='event-description'
             value={event && event.event_description ? event.event_description : ''}
-            onChange={(e) => setEvent({ ...event, event_description: e.target.value })}
+            onChange={(e) => setEvent(prev => ({ ...prev, event_description: e.target.value }))}
             placeholder="Event Description"
             required
           />
@@ -101,7 +101,7 @@ const EventForm = ({ event, setEvent, handleSubmit, isRecurring, setIsRecurring 
                 )}
               </select>
             </div>
-            <RecurrenceDateInput recurrenceTimeUnit={event?.recurrence?.time_unit} recurrence={event?.recurrence} setRecurrence={(data) => setEvent(prev => ({ ...prev, recurrence: data }))} />
+            <RecurrenceDateInput recurrenceTimeUnit={event?.recurrence?.time_unit} recurrence={event?.recurrence} setEvent={setEvent} />
           </div>
           <div className='form-row'>
             <div className='form-col recurrence'>
