@@ -388,10 +388,9 @@ function Home({ userId, loading, setIsAuthenticated, setToken }) {
 						// repeats on relative days like the 1/3/last monday of the month/year ...
 						else if (recurrence?.recurrence_type === "relative date") {
 							const { weekNumber, isFirst, isLast } = getOrdinalWeekday(currentDate);
-
 							// relative date and month
-							if (recurrence?.time_unit === 'month' &&
-								currentDate?.getDay() === parseInt(recurrence?.recurrence_amount) &&
+							if ((recurrence?.time_unit === 'day') &&
+								(currentDate?.getDay() === parseInt(recurrence?.recurrence_amount)) &&
 								((weekNumber === parseInt(recurrence?.relative_recurrence_by)) ||
 									(isFirst && recurrence?.relative_recurrence_by === "first") ||
 									(isLast && recurrence?.relative_recurrence_by === 'last'))) {
@@ -403,7 +402,7 @@ function Home({ userId, loading, setIsAuthenticated, setToken }) {
 										event_id: event_id,
 									});
 									console.log("current Date", currentDate, "week Number:", weekNumber, "isFirst:", isFirst, "isLast:", isLast)
-									currentDate = addWeeks(currentDate, 1);
+									currentDate = addDays(currentDate, 1);
 								}
 							}
 							// relative date and year
