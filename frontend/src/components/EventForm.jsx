@@ -38,7 +38,7 @@ const EventForm = ({ event, setEvent, handleSubmit, isRecurring, setIsRecurring 
             required
           />
           <div className="recurrence-toggle-wrapper">
-            <span className="recurrence-toggle-description">{isRecurring ? "Recurring Event" : "Single Occurence"}</span>
+            <span className="recurrence-toggle-description">{isRecurring ? "Recurring Event" : "Single Occurrence"}</span>
             <div className="recurrence-toggle" onClick={() => setIsRecurring(prev => !prev)}>
               <input
                 type="checkbox"
