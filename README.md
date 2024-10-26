@@ -1,5 +1,6 @@
 # Event-Scheduler
 A web application for scheduling events with advanced recurrent event monitoring
+built using react js for the frontend and express js for the backend and postgres database
 
 to run this app you need postgres installed after that the following steps need to be taken
 
